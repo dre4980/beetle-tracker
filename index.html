@@ -4,9 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>獨角仙成長紀錄表 🪲</title>
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: Zen Maru Gothic -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -75,7 +73,7 @@
 
         <div>
           <label class="block text-xs font-bold text-stone-600 mb-1">備註 / 狀態說明</label>
-          <input type="text" id="notes" placeholder="例如：健康良好、剛換土"
+          <input type="text" id="notes" placeholder="例如：健康良好、快轉齡了"
             class="w-full px-3 py-2 text-sm bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400">
         </div>
 
@@ -90,7 +88,7 @@
     <div>
       <div class="flex justify-between items-center mb-3 px-1">
         <h2 class="text-lg font-bold text-stone-700 flex items-center gap-2">
-          <span>📊</span> 成長紀錄列表
+          <span>📊</span> 歷史紀錄
         </h2>
         <button id="refreshBtn" class="text-xs bg-white text-stone-600 px-3 py-1.5 rounded-lg border border-stone-200 shadow-sm hover:bg-stone-50 active:scale-95 transition">
           🔄 重新整理
@@ -106,12 +104,11 @@
   </div>
 
   <script>
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbypzRHJdk23hTQi5aVc08wDCmsi2Ga2zInzObxDtKVpgVC2Pn5eaUaoZ-U4sHaUZ6Cb/exec';
+    // 更新為新的 API 網址
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbw15N3XY3gt-PsiZP1tWhDQiugUXYrYuMMyvqwTO-4Nmh3bSCO7Jy8fV698A7-eaRyW/exec';
 
-    // 預設今日日期
     document.getElementById('date').valueAsDate = new Date();
 
-    // 讀取試算表資料
     async function fetchData() {
       const container = document.getElementById('logsContainer');
       const loading = document.getElementById('loading');
@@ -119,16 +116,20 @@
       container.innerHTML = '';
 
       try {
-        const response = await fetch(GAS_URL);
+        const response = await fetch(GAS_URL, { redirect: 'follow' });
         const data = await response.json();
         loading.classList.add('hidden');
+
+        if (data.error) {
+          container.innerHTML = `<div class="bg-red-50 text-red-500 rounded-xl p-4 text-center text-xs">試算表讀取錯誤：${data.error}</div>`;
+          return;
+        }
 
         if (!data || data.length === 0) {
           container.innerHTML = `<div class="bg-white rounded-xl p-6 text-center text-stone-400 text-sm border border-stone-100">目前尚無紀錄數據</div>`;
           return;
         }
 
-        // 讓最新新增的紀錄排在最上面
         data.reverse().forEach(item => {
           const card = document.createElement('div');
           card.className = 'bg-white rounded-xl p-4 shadow-sm border border-amber-100/60 relative flex flex-col gap-2';
@@ -157,11 +158,10 @@
       } catch (err) {
         console.error(err);
         loading.classList.add('hidden');
-        container.innerHTML = `<div class="bg-red-50 text-red-500 rounded-xl p-4 text-center text-xs">無法讀取資料，請確認 Apps Script 部署權限是否設為「所有人」。</div>`;
+        container.innerHTML = `<div class="bg-red-50 text-red-500 rounded-xl p-4 text-center text-xs">無法讀取資料，請確認 Apps Script 已選擇「所有人」存取權並部署。</div>`;
       }
     }
 
-    // 提交表單發送資料至 Google 試算表
     document.getElementById('growthForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('submitBtn');
@@ -181,18 +181,15 @@
         await fetch(GAS_URL, {
           method: 'POST',
           mode: 'no-cors',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify(payload)
         });
 
-        alert('成功儲存！已同步至 Google 試算表。');
+        alert('成功儲存！數據已同步至試算表。');
         document.getElementById('growthForm').reset();
         document.getElementById('date').valueAsDate = new Date();
         
-        // 延遲 1.5 秒讓 Google 寫入後再刷新清單
-        setTimeout(fetchData, 1500);
+        setTimeout(fetchData, 2000);
 
       } catch (err) {
         alert('儲存失敗，請檢查網路連線。');
@@ -204,8 +201,6 @@
     });
 
     document.getElementById('refreshBtn').addEventListener('click', fetchData);
-
-    // 頁面載入時讀取資料
     fetchData();
   </script>
 </body>
