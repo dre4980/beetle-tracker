@@ -75,22 +75,22 @@
 
         <div>
           <label class="block text-xs font-bold text-stone-600 mb-1">備註 / 狀態說明</label>
-          <input type="text" id="notes" placeholder="例如：健康良好、快轉齡了"
+          <input type="text" id="notes" placeholder="例如：健康良好、剛換土"
             class="w-full px-3 py-2 text-sm bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400">
         </div>
 
         <button type="submit" id="submitBtn"
-          class="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow-md transition duration-200 active:scale-98 flex items-center justify-center gap-2">
+          class="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow-md transition duration-200 active:scale-95 flex items-center justify-center gap-2">
           <span>💾</span> 儲存並同步至雲端
         </button>
       </form>
     </div>
 
-    <!-- 歷史紀錄 -->
+    <!-- 歷史紀錄列表 -->
     <div>
       <div class="flex justify-between items-center mb-3 px-1">
         <h2 class="text-lg font-bold text-stone-700 flex items-center gap-2">
-          <span>📊</span> 歷史紀錄
+          <span>📊</span> 成長紀錄列表
         </h2>
         <button id="refreshBtn" class="text-xs bg-white text-stone-600 px-3 py-1.5 rounded-lg border border-stone-200 shadow-sm hover:bg-stone-50 active:scale-95 transition">
           🔄 重新整理
@@ -106,12 +106,12 @@
   </div>
 
   <script>
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbz_QrtweLYogh7jqpq0zooM-u_ZxJwitRc0xZZ8w77bKPhAyau8d0T49Th4OrnT5l9a/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbypzRHJdk23hTQi5aVc08wDCmsi2Ga2zInzObxDtKVpgVC2Pn5eaUaoZ-U4sHaUZ6Cb/exec';
 
     // 預設今日日期
     document.getElementById('date').valueAsDate = new Date();
 
-    // 載入資料
+    // 讀取試算表資料
     async function fetchData() {
       const container = document.getElementById('logsContainer');
       const loading = document.getElementById('loading');
@@ -128,7 +128,7 @@
           return;
         }
 
-        // 反轉陣列，讓最新資料排在最前
+        // 讓最新新增的紀錄排在最上面
         data.reverse().forEach(item => {
           const card = document.createElement('div');
           card.className = 'bg-white rounded-xl p-4 shadow-sm border border-amber-100/60 relative flex flex-col gap-2';
@@ -157,11 +157,11 @@
       } catch (err) {
         console.error(err);
         loading.classList.add('hidden');
-        container.innerHTML = `<div class="bg-red-50 text-red-500 rounded-xl p-4 text-center text-xs">資料載入失敗，請確認 API 設定或網路連線。</div>`;
+        container.innerHTML = `<div class="bg-red-50 text-red-500 rounded-xl p-4 text-center text-xs">無法讀取資料，請確認 Apps Script 部署權限是否設為「所有人」。</div>`;
       }
     }
 
-    // 表單提交事件
+    // 提交表單發送資料至 Google 試算表
     document.getElementById('growthForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('submitBtn');
@@ -187,15 +187,15 @@
           body: JSON.stringify(payload)
         });
 
-        alert('成功提交！已同步至 Google 試算表。');
+        alert('成功儲存！已同步至 Google 試算表。');
         document.getElementById('growthForm').reset();
         document.getElementById('date').valueAsDate = new Date();
         
-        // 延遲 1.5 秒讓試算表更新後重新載入列表
+        // 延遲 1.5 秒讓 Google 寫入後再刷新清單
         setTimeout(fetchData, 1500);
 
       } catch (err) {
-        alert('儲存失敗，請檢查網路狀態。');
+        alert('儲存失敗，請檢查網路連線。');
         console.error(err);
       } finally {
         btn.disabled = false;
