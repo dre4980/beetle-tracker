@@ -4,9 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>獨角仙成長紀錄表 🪲</title>
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: Zen Maru Gothic -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -17,7 +15,6 @@
 <body class="bg-amber-50 text-stone-800 min-h-screen pb-12 p-4">
 
   <div class="max-w-md mx-auto space-y-6">
-    <!-- Header -->
     <header class="text-center pt-4">
       <div class="inline-block p-3 bg-amber-200 rounded-full mb-2 shadow-inner">
         <span class="text-3xl">🪲</span>
@@ -26,7 +23,6 @@
       <p class="text-xs text-amber-700 mt-1">即時同步至 Google 試算表</p>
     </header>
 
-    <!-- 新增紀錄表單 -->
     <div class="bg-white rounded-2xl p-5 shadow-sm border border-amber-100">
       <h2 class="text-lg font-bold text-stone-700 mb-4 flex items-center gap-2">
         <span>📝</span> 新增成長紀錄
@@ -52,7 +48,7 @@
               <option value="卵">🥚 卵</option>
               <option value="L1一齡">🐛 L1 (一齡)</option>
               <option value="L2二齡">🐛 L2 (二齡)</option>
-              <option value="L3三齡" selected>🐛 L3 (三齡)</option>
+              <option value="L3" selected>🐛 L3 (三齡)</option>
               <option value="前蛹">🟡 前蛹</option>
               <option value="化蛹">🪰 化蛹</option>
               <option value="成蟲">👑 成蟲</option>
@@ -75,7 +71,7 @@
 
         <div>
           <label class="block text-xs font-bold text-stone-600 mb-1">備註 / 狀態說明</label>
-          <input type="text" id="notes" placeholder="例如：健康良好、剛換土"
+          <input type="text" id="notes" placeholder="例如：健康良好、快轉齡了"
             class="w-full px-3 py-2 text-sm bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400">
         </div>
 
@@ -86,7 +82,6 @@
       </form>
     </div>
 
-    <!-- 歷史紀錄列表 -->
     <div>
       <div class="flex justify-between items-center mb-3 px-1">
         <h2 class="text-lg font-bold text-stone-700 flex items-center gap-2">
@@ -106,62 +101,64 @@
   </div>
 
   <script>
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbyo29tT04W2H9ys9kBPPz-n2pdnNZQ_VyCACJeyhTS6qMiXN-EKJgZb1m8LvkGGulqI/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbz7WUs7zMplgbj1N0lkJ9I1KO4cZF5_WanybE5SUglujkejvvFYfoEJUCLa-0bSuxXr/exec';
 
-    // 預設今日日期
     document.getElementById('date').valueAsDate = new Date();
 
-    // 讀取試算表資料
-    async function fetchData() {
+    window.handleData = function(data) {
       const container = document.getElementById('logsContainer');
       const loading = document.getElementById('loading');
-      loading.classList.remove('hidden');
+      loading.classList.add('hidden');
       container.innerHTML = '';
 
-      try {
-        const response = await fetch(GAS_URL);
-        const data = await response.json();
-        loading.classList.add('hidden');
-
-        if (!data || data.length === 0) {
-          container.innerHTML = `<div class="bg-white rounded-xl p-6 text-center text-stone-400 text-sm border border-stone-100">目前尚無紀錄數據</div>`;
-          return;
-        }
-
-        // 讓最新新增的紀錄排在最上面
-        data.reverse().forEach(item => {
-          const card = document.createElement('div');
-          card.className = 'bg-white rounded-xl p-4 shadow-sm border border-amber-100/60 relative flex flex-col gap-2';
-
-          card.innerHTML = `
-            <div class="flex justify-between items-start border-b border-stone-100 pb-2">
-              <div>
-                <span class="font-bold text-stone-800 text-base">${item.name || '未命名'}</span>
-                <span class="text-xs text-stone-400 ml-2">${item.date ? String(item.date).substring(0, 10) : ''}</span>
-              </div>
-              <span class="px-2 py-0.5 bg-amber-100 text-amber-800 text-xs font-bold rounded-full">
-                ${item.stage || '未指定'}
-              </span>
-            </div>
-            
-            <div class="grid grid-cols-2 text-xs text-stone-600 gap-1 pt-1">
-              <div><span class="text-stone-400">體重：</span><strong class="text-amber-600 font-bold text-sm">${item.weight || '0'}</strong> g</div>
-              <div><span class="text-stone-400">介質：</span>${item.feed || '-'}</div>
-            </div>
-
-            ${item.notes ? `<div class="text-xs text-stone-500 bg-stone-50 p-2 rounded-lg mt-1"><span class="text-stone-400">備註：</span>${item.notes}</div>` : ''}
-          `;
-          container.appendChild(card);
-        });
-
-      } catch (err) {
-        console.error(err);
-        loading.classList.add('hidden');
-        container.innerHTML = `<div class="bg-red-50 text-red-500 rounded-xl p-4 text-center text-xs">無法讀取資料，請確認 Apps Script 部署權限是否設為「所有人」。</div>`;
+      if (!data || data.length === 0) {
+        container.innerHTML = `<div class="bg-white rounded-xl p-6 text-center text-stone-400 text-sm border border-stone-100">目前尚無紀錄數據（可試著在上方新增第一筆！）</div>`;
+        return;
       }
+
+      data.reverse().forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'bg-white rounded-xl p-4 shadow-sm border border-amber-100/60 relative flex flex-col gap-2';
+
+        card.innerHTML = `
+          <div class="flex justify-between items-start border-b border-stone-100 pb-2">
+            <div>
+              <span class="font-bold text-stone-800 text-base">${item.name || '未命名'}</span>
+              <span class="text-xs text-stone-400 ml-2">${item.date ? String(item.date).substring(0, 10) : ''}</span>
+            </div>
+            <span class="px-2 py-0.5 bg-amber-100 text-amber-800 text-xs font-bold rounded-full">
+              ${item.stage || '未指定'}
+            </span>
+          </div>
+          
+          <div class="grid grid-cols-2 text-xs text-stone-600 gap-1 pt-1">
+            <div><span class="text-stone-400">體重：</span><strong class="text-amber-600 font-bold text-sm">${item.weight || '0'}</strong> g</div>
+            <div><span class="text-stone-400">介質：</span>${item.feed || '-'}</div>
+          </div>
+
+          ${item.notes ? `<div class="text-xs text-stone-500 bg-stone-50 p-2 rounded-lg mt-1"><span class="text-stone-400">備註：</span>${item.notes}</div>` : ''}
+        `;
+        container.appendChild(card);
+      });
+    };
+
+    function fetchData() {
+      const loading = document.getElementById('loading');
+      loading.classList.remove('hidden');
+
+      const oldScript = document.getElementById('jsonp-script');
+      if (oldScript) oldScript.remove();
+
+      const script = document.createElement('script');
+      script.id = 'jsonp-script';
+      script.src = `${GAS_URL}?callback=handleData&t=${new Date().getTime()}`;
+      script.onerror = function() {
+        loading.classList.add('hidden');
+        document.getElementById('logsContainer').innerHTML = `<div class="bg-red-50 text-red-500 rounded-xl p-4 text-center text-xs">讀取失敗，請確認該 Google 試算表第一列是否有建立標題欄位。</div>`;
+      };
+      document.body.appendChild(script);
     }
 
-    // 提交表單發送資料至 Google 試算表
     document.getElementById('growthForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('submitBtn');
@@ -181,18 +178,15 @@
         await fetch(GAS_URL, {
           method: 'POST',
           mode: 'no-cors',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify(payload)
         });
 
-        alert('成功儲存！已同步至 Google 試算表。');
+        alert('成功儲存！數據已同步至 Google 試算表。');
         document.getElementById('growthForm').reset();
         document.getElementById('date').valueAsDate = new Date();
         
-        // 延遲 1.5 秒讓 Google 寫入後再刷新清單
-        setTimeout(fetchData, 1500);
+        setTimeout(fetchData, 2000);
 
       } catch (err) {
         alert('儲存失敗，請檢查網路連線。');
@@ -204,8 +198,6 @@
     });
 
     document.getElementById('refreshBtn').addEventListener('click', fetchData);
-
-    // 頁面載入時讀取資料
     fetchData();
   </script>
 </body>
