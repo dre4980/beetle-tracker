@@ -48,7 +48,7 @@
               <option value="卵">🥚 卵</option>
               <option value="L1一齡">🐛 L1 (一齡)</option>
               <option value="L2二齡">🐛 L2 (二齡)</option>
-              <option value="L3" selected>🐛 L3 (三齡)</option>
+              <option value="L3三齡" selected>🐛 L3 (三齡)</option>
               <option value="前蛹">🟡 前蛹</option>
               <option value="化蛹">🪰 化蛹</option>
               <option value="成蟲">👑 成蟲</option>
@@ -101,7 +101,7 @@
   </div>
 
   <script>
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbz7WUs7zMplgbj1N0lkJ9I1KO4cZF5_WanybE5SUglujkejvvFYfoEJUCLa-0bSuxXr/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycby4h10V6q9em7oyKGq-dOzQTtpj6cdNCVVZdEG2qPMt5OlZaCvNomoJViZSHsWhbBPf/exec';
 
     document.getElementById('date').valueAsDate = new Date();
 
@@ -111,8 +111,8 @@
       loading.classList.add('hidden');
       container.innerHTML = '';
 
-      if (!data || data.length === 0) {
-        container.innerHTML = `<div class="bg-white rounded-xl p-6 text-center text-stone-400 text-sm border border-stone-100">目前尚無紀錄數據（可試著在上方新增第一筆！）</div>`;
+      if (!Array.isArray(data) || data.length === 0) {
+        container.innerHTML = `<div class="bg-white rounded-xl p-6 text-center text-stone-400 text-sm border border-stone-100">目前尚無紀錄數據（可在上方新增第一筆）</div>`;
         return;
       }
 
@@ -154,7 +154,7 @@
       script.src = `${GAS_URL}?callback=handleData&t=${new Date().getTime()}`;
       script.onerror = function() {
         loading.classList.add('hidden');
-        document.getElementById('logsContainer').innerHTML = `<div class="bg-red-50 text-red-500 rounded-xl p-4 text-center text-xs">讀取失敗，請確認該 Google 試算表第一列是否有建立標題欄位。</div>`;
+        document.getElementById('logsContainer').innerHTML = `<div class="bg-red-50 text-red-500 rounded-xl p-4 text-center text-xs">載入失敗，請確認 Apps Script 已點選「建立新版本」重新部署。</div>`;
       };
       document.body.appendChild(script);
     }
@@ -186,7 +186,7 @@
         document.getElementById('growthForm').reset();
         document.getElementById('date').valueAsDate = new Date();
         
-        setTimeout(fetchData, 2000);
+        setTimeout(fetchData, 1500);
 
       } catch (err) {
         alert('儲存失敗，請檢查網路連線。');
