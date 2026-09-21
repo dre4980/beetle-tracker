@@ -3,169 +3,155 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>獨角仙成長紀錄表 🪲</title>
+  <title>獨角仙成長紀錄表</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Zen Maru Gothic', sans-serif; }
   </style>
 </head>
-<body class="bg-amber-50 text-stone-800 min-h-screen pb-12 p-4">
+<body class="bg-amber-50 text-stone-800 min-h-screen p-4 max-w-md mx-auto pb-20">
 
-  <div class="max-w-md mx-auto space-y-6">
-    <!-- 標頭 -->
-    <header class="text-center pt-4">
-      <div class="inline-block p-3 bg-amber-200 rounded-full mb-2 shadow-inner">
-        <span class="text-3xl">🪲</span>
+  <!-- 標頭 -->
+  <header class="text-center my-6">
+    <h1 class="text-3xl font-bold text-amber-900 flex items-center justify-center gap-2">
+      🪲 獨角仙成長紀錄
+    </h1>
+    <p class="text-xs text-amber-700 mt-1">雲端試算表同步版</p>
+  </header>
+
+  <!-- 新增資料表單 -->
+  <section class="bg-white p-5 rounded-2xl shadow-sm border border-amber-200 mb-6">
+    <h2 class="text-lg font-bold text-amber-800 mb-4 pb-2 border-b border-amber-100 flex items-center gap-2">
+      📝 新增成長紀錄
+    </h2>
+    <form id="growthForm" class="space-y-4">
+      <div>
+        <label class="block text-xs font-bold text-stone-600 mb-1">個體編號 / 名稱</label>
+        <input type="text" id="name" required placeholder="例如：RH-01" class="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm">
       </div>
-      <h1 class="text-2xl font-black text-amber-900 tracking-wide">獨角仙成長紀錄表</h1>
-      <p class="text-xs text-amber-700 mt-1">即時同步至 Google 試算表</p>
-    </header>
 
-    <!-- 表單區 -->
-    <div class="bg-white rounded-2xl p-5 shadow-sm border border-amber-100">
-      <h2 class="text-lg font-bold text-stone-700 mb-4 flex items-center gap-2">
-        <span>📝</span> 新增成長紀錄
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-bold text-stone-600 mb-1">紀錄日期</label>
+          <input type="date" id="date" required class="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-stone-600 mb-1">成長階段</label>
+          <select id="stage" class="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm">
+            <option value="卵">🥚 卵</option>
+            <option value="L1一齡">🐛 L1 一齡</option>
+            <option value="L2二齡">🐛 L2 二齡</option>
+            <option value="L3三齡" selected>🐛 L3 三齡</option>
+            <option value="化蛹">💤 化蛹</option>
+            <option value="成蟲">🪲 成蟲</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-bold text-stone-600 mb-1">體重 (g)</label>
+          <input type="number" step="0.1" id="weight" placeholder="0.0" class="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-stone-600 mb-1">介質 / 食材</label>
+          <input type="text" id="feed" placeholder="例如：高發酵木屑" class="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-stone-600 mb-1">備註說明</label>
+        <input type="text" id="notes" placeholder="例如：健康良好、進行換土" class="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm">
+      </div>
+
+      <button type="submit" id="submitBtn" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-xl transition duration-200 shadow hover:shadow-md active:scale-95 text-sm flex items-center justify-center gap-2">
+        ➕ 新增並儲存至雲端
+      </button>
+    </form>
+  </section>
+
+  <!-- 紀錄列表區塊 -->
+  <section>
+    <div class="flex justify-between items-center mb-3 px-1">
+      <h2 class="text-lg font-bold text-amber-900 flex items-center gap-2">
+        📊 歷史成長紀錄
       </h2>
-
-      <form id="growthForm" class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold text-stone-600 mb-1">個體編號 / 名稱 *</label>
-          <input type="text" id="name" required placeholder="例如：A-01 或 獨角仙甲"
-            class="w-full px-3 py-2 text-sm bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400">
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-bold text-stone-600 mb-1">紀錄日期 *</label>
-            <input type="date" id="date" required
-              class="w-full px-3 py-2 text-sm bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400">
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-stone-600 mb-1">成長階段 *</label>
-            <select id="stage" required
-              class="w-full px-3 py-2 text-sm bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400">
-              <option value="卵">🥚 卵</option>
-              <option value="L1一齡">🐛 L1 (一齡)</option>
-              <option value="L2二齡">🐛 L2 (二齡)</option>
-              <option value="L3三齡" selected>🐛 L3 (三齡)</option>
-              <option value="前蛹">🟡 前蛹</option>
-              <option value="化蛹">🪰 化蛹</option>
-              <option value="成蟲">👑 成蟲</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-bold text-stone-600 mb-1">體重 (g) *</label>
-            <input type="number" id="weight" step="0.1" min="0" placeholder="0.0" required
-              class="w-full px-3 py-2 text-sm bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400">
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-stone-600 mb-1">介質 / 食材</label>
-            <input type="text" id="feed" placeholder="例如：大夢培植土"
-              class="w-full px-3 py-2 text-sm bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400">
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-stone-600 mb-1">備註 / 狀態說明</label>
-          <input type="text" id="notes" placeholder="例如：健康良好、快轉齡了"
-            class="w-full px-3 py-2 text-sm bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400">
-        </div>
-
-        <button type="submit" id="submitBtn"
-          class="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow-md transition duration-200 active:scale-95 flex items-center justify-center gap-2">
-          <span>💾</span> 儲存並同步至雲端
-        </button>
-      </form>
+      <button onclick="fetchData()" class="text-xs bg-amber-200 text-amber-900 px-3 py-1.5 rounded-lg hover:bg-amber-300 font-bold transition">
+        🔄 重新整理
+      </button>
     </div>
 
-    <!-- 歷史紀錄 -->
-    <div>
-      <div class="flex justify-between items-center mb-3 px-1">
-        <h2 class="text-lg font-bold text-stone-700 flex items-center gap-2">
-          <span>📊</span> 歷史紀錄
-        </h2>
-        <button id="refreshBtn" class="text-xs bg-white text-stone-600 px-3 py-1.5 rounded-lg border border-stone-200 shadow-sm hover:bg-stone-50 active:scale-95 transition">
-          🔄 重新整理
-        </button>
-      </div>
-
-      <div id="loading" class="text-center py-8 text-stone-400 text-sm">
-        資料讀取中...
-      </div>
-
-      <div id="logsContainer" class="space-y-3"></div>
+    <div id="loading" class="text-center py-8 text-stone-400 text-sm">
+      資料載入中...
     </div>
-  </div>
+
+    <div id="recordList" class="space-y-3">
+      <!-- 紀錄卡片會由 JavaScript 動態生成 -->
+    </div>
+  </section>
 
   <script>
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbypzRHJdk23hTQi5aVc08wDCmsi2Ga2zInzObxDtKVpgVC2Pn5eaUaoZ-U4sHaUZ6Cb/exec';
+    // 已自動加入你產生的 API 網址
+    const API_URL = "https://script.google.com/macros/s/AKfycbwgRltW61Zqlpo9Ti64IRAIELIIQk8gmAXny2rLgQv0-pK9UzkFpRK4cHaOCfkpdVrl/exec";
 
+    // 預設今日日期
     document.getElementById('date').valueAsDate = new Date();
 
+    // 載入資料
     async function fetchData() {
-      const container = document.getElementById('logsContainer');
       const loading = document.getElementById('loading');
+      const recordList = document.getElementById('recordList');
       loading.classList.remove('hidden');
-      container.innerHTML = '';
+      recordList.innerHTML = '';
 
       try {
-        const response = await fetch(GAS_URL, { redirect: 'follow' });
+        const response = await fetch(API_URL);
         const data = await response.json();
         loading.classList.add('hidden');
 
-        if (data.error) {
-          container.innerHTML = `<div class="bg-red-50 text-red-500 rounded-xl p-4 text-center text-xs">試算表讀取錯誤：${data.error}</div>`;
-          return;
-        }
-
         if (!data || data.length === 0) {
-          container.innerHTML = `<div class="bg-white rounded-xl p-6 text-center text-stone-400 text-sm border border-stone-100">目前尚無紀錄數據</div>`;
+          recordList.innerHTML = '<p class="text-center text-stone-400 text-sm py-6">目前還沒有任何紀錄喔！</p>';
           return;
         }
 
+        // 反轉陣列，最新資料排前面
         data.reverse().forEach(item => {
           const card = document.createElement('div');
-          card.className = 'bg-white rounded-xl p-4 shadow-sm border border-amber-100/60 relative flex flex-col gap-2';
+          card.className = 'bg-white p-4 rounded-xl border border-stone-200 shadow-sm space-y-2';
+          
+          let dateStr = item.date ? new Date(item.date).toLocaleDateString('zh-TW') : '無日期';
 
           card.innerHTML = `
-            <div class="flex justify-between items-start border-b border-stone-100 pb-2">
+            <div class="flex justify-between items-start">
               <div>
-                <span class="font-bold text-stone-800 text-base">${item.name || '未命名'}</span>
-                <span class="text-xs text-stone-400 ml-2">${item.date ? String(item.date).substring(0, 10) : ''}</span>
+                <span class="font-bold text-amber-900 text-base">${item.name || '未命名'}</span>
+                <span class="text-xs text-stone-400 ml-2">${dateStr}</span>
               </div>
-              <span class="px-2 py-0.5 bg-amber-100 text-amber-800 text-xs font-bold rounded-full">
+              <span class="bg-amber-100 text-amber-800 text-xs px-2.5 py-1 rounded-full font-bold">
                 ${item.stage || '未指定'}
               </span>
             </div>
-            
-            <div class="grid grid-cols-2 text-xs text-stone-600 gap-1 pt-1">
-              <div><span class="text-stone-400">體重：</span><strong class="text-amber-600 font-bold text-sm">${item.weight || '0'}</strong> g</div>
-              <div><span class="text-stone-400">介質：</span>${item.feed || '-'}</div>
+            <div class="grid grid-cols-2 gap-2 text-xs text-stone-600 bg-stone-50 p-2.5 rounded-lg mt-2">
+              <div><strong>⚖️ 體重:</strong> ${item.weight ? item.weight + ' g' : '-'}</div>
+              <div><strong>🍂 介質:</strong> ${item.feed || '-'}</div>
             </div>
-
-            ${item.notes ? `<div class="text-xs text-stone-500 bg-stone-50 p-2 rounded-lg mt-1"><span class="text-stone-400">備註：</span>${item.notes}</div>` : ''}
+            ${item.notes ? `<p class="text-xs text-stone-500 pt-1">📝 ${item.notes}</p>` : ''}
           `;
-          container.appendChild(card);
+          recordList.appendChild(card);
         });
-
-      } catch (err) {
-        console.error(err);
-        loading.classList.add('hidden');
-        container.innerHTML = `<div class="bg-red-50 text-red-500 rounded-xl p-4 text-center text-xs">資料載入失敗，請確認 Apps Script 已選擇「所有人」存取權並部署「新版本」。</div>`;
+      } catch (error) {
+        console.error('Error:', error);
+        loading.innerText = '⚠️ 資料載入失敗，請確認 API 設定或稍後再試。';
       }
     }
 
-    document.getElementById('growthForm').addEventListener('submit', async (e) => {
+    // 提交表單
+    document.getElementById('growthForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-      const btn = document.getElementById('submitBtn');
-      btn.disabled = true;
-      btn.innerText = '儲存中...';
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerText = '⏳ 正在傳送至試算表...';
 
       const payload = {
         name: document.getElementById('name').value,
@@ -177,29 +163,29 @@
       };
 
       try {
-        await fetch(GAS_URL, {
+        await fetch(API_URL, {
           method: 'POST',
           mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain' },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
 
-        alert('成功儲存！數據已同步至試算表。');
+        alert('🎉 紀錄新增成功！');
         document.getElementById('growthForm').reset();
         document.getElementById('date').valueAsDate = new Date();
         
+        // 延遲1.5秒刷新，確保 Google 試算表寫入完畢
         setTimeout(fetchData, 1500);
-
-      } catch (err) {
-        alert('儲存失敗，請檢查網路連線。');
-        console.error(err);
+      } catch (error) {
+        alert('❌ 發生錯誤，新增失敗！');
+        console.error(error);
       } finally {
-        btn.disabled = false;
-        btn.innerText = '💾 儲存並同步至雲端';
+        submitBtn.disabled = false;
+        submitBtn.innerText = '➕ 新增並儲存至雲端';
       }
     });
 
-    document.getElementById('refreshBtn').addEventListener('click', fetchData);
+    // 初始載入
     fetchData();
   </script>
 </body>
